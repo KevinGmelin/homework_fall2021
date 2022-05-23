@@ -45,9 +45,21 @@ def build_mlp(
     if isinstance(output_activation, str):
         output_activation = _str_to_activation[output_activation]
 
-    # TODO: return a MLP. This should be an instance of nn.Module
-    # Note: nn.Sequential is an instance of nn.Module.
-    raise NotImplementedError
+
+    if n_layers <= 0:
+        return nn.Sequential(nn.Linear(input_size, output_size), output_activation)
+
+    MLP = nn.Sequential()
+    MLP.add_module("linear_1", nn.Linear(input_size, size))
+    MLP.add_module("activation_1", activation)
+    for i in range(n_layers):
+        MLP.add_module("linear_%d" % (i+2), nn.Linear(size, size))
+        MLP.add_module("activation_%d" % (i+2), activation)
+
+    MLP.add_module("linear_%d" % (i + 3), nn.Linear(size, output_size))
+    MLP.add_module("output_activation_1", output_activation)
+
+    return MLP
 
 
 device = None
